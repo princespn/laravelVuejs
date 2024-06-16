@@ -45,15 +45,15 @@ export default {
         async loginAction() {
             try {
                 const response = await axios.post('/api/login', this.item);
-                // alert(response.data);
-                if (response.data) {
+               // alert(response.data);
+                if (response.data.status) {
          
                     localStorage.setItem('token', response.data.token);
 
                     this.$router.push('/profile');
 
                 } else {
-                    //alert(response.data.message);
+                    alert(response.data.message);
 
                     this.$router.push('/login');
                 }

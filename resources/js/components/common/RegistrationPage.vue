@@ -59,7 +59,7 @@ export default {
 
                 const response = await axios.post('api/register', this.item).then(res => {
 
-                    if (response.data) {
+                    if (response.data.status) {
 
                         this.$router.push('/login');
 

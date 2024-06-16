@@ -6,3 +6,9 @@
 
 // Bootstrap
 @import 'bootstrap/scss/bootstrap';
+
+label {
+    display: inline-block;
+    font-size: 21px;
+    margin: 12px 19px 11px;
+}

@@ -1,143 +1,199 @@
 <template>
-    <div class="col-md-8">
+  <div class="col-md-8">
       <div class="card">
-        <div class="col-md-4">
-          <div class="card-header">User Reports</div>
-          <div class="card-header">
-            <router-link to="/add-products" class="col-md-8">Add Product</router-link>
-           
+          <div class="card-header"> <b-button variant="success" @click="showAddProductModal">Add Product</b-button><span style="float: inline-end;">Product Reports </span>
+      
           </div>
-        </div>
-  
-        <div class="card-body p-2">
-          <table class="table table-bordered table-hover">
-            <thead>
-              <tr>
-                <th>Sr. No.</th>
-                <th>Product Name</th>
-                <th>User Name</th>
-                <th>Product Description</th>
-                <th>Product Price</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(product, index) in products" :key="product.id">
-                <td>{{ index + 1 }}</td>
-                <td>{{ product.name }}</td>
-                <td>{{ product.user.name }}</td>
-                <td>{{ product.discription }}</td>
-                <td>{{ product.price }}</td>
-                <td><button @click="editProduct(product)">Edit</button></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+          <div class="card-body p-2">
+              <table class="table table-bordered table-hover">
+                  <thead>
+                      <tr>
+                          <th>Sr. No.</th>
+                          <th>Product Name</th>
+                          <th>User Name</th>
+                          <th>Product Description</th>
+                          <th>Product price</th>
+                          <th>Action</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <tr v-for="(product, index) in productDetails" :key="product.id">
+                          <td>{{ index + 1 }}</td>
+                          <td>{{ product.name }}</td>
+                          <td>{{ product.user.name }}</td>
+                          <td>{{ product.discription }}</td>
+                          <td>{{ product.price }}</td>
+                          <td>
+                              <b-button variant="info" @click="showEditModal(product)">Edit</b-button>
+                          </td>
+                      </tr>
+                  </tbody>
+              </table>
+          </div>
       </div>
-  
-      <b-modal v-model:visible="showModal" title="Add Product">
-        <form @submit.prevent="addProduct">
-          <div class="form-group">
-            <label for="productName">Product Name</label>
-            <input type="text" v-model="newProduct.name" class="form-control" id="productName" required>
-          </div>
-          <div class="form-group">
-            <label for="productDescription">Product Description</label>
-            <input type="text" v-model="newProduct.discription" class="form-control" id="productDescription" required>
-          </div>
-          <div class="form-group">
-            <label for="productPrice">Product Price</label>
-            <input type="number" v-model="newProduct.price" class="form-control" id="productPrice" required>
-          </div>
-          <div class="form-group">
-            <label for="userId">User ID</label>
-            <input type="number" v-model="newProduct.user_id" class="form-control" id="userId" required>
-          </div>
-          <b-button type="submit" variant="primary">Add Product</b-button>
-        </form>
+      
+      <b-modal v-model="isEditModalVisible" title="Edit Product" hide-footer>
+          <form @submit.prevent="updateProduct">
+              <div class="form-group">
+                  <label for="editProductName">Product Name</label>
+                  <input type="text" v-model="editProductForm.name" class="form-control" id="editProductName" required>
+              </div>
+              <div class="form-group">
+                  <label for="editProductdiscription">Product discription</label>
+                  <input type="text" v-model="editProductForm.discription" class="form-control" id="editProductdiscription" required>
+              </div>
+              <div class="form-group">
+                  <label for="editProductprice">Product price</label>
+                  <input type="number" v-model="editProductForm.price" class="form-control" id="editProductprice" required>
+              </div>
+              <div class="form-group">
+                <label for="saveproduct"></label>
+                  <b-button type="submit" class="form-control" variant="primary">Update Product</b-button>
+              </div>
+          </form>
       </b-modal>
-    </div>
-  </template>
+      
+    <b-modal v-model="isAddProductModalVisible" title="Add Product" hide-footer>
+          <form @submit.prevent="addProduct">
+              <div class="form-group">
+                  <label for="productName">Product Name</label>
+                  <input type="text" v-model="newProductForm.name" class="form-control" id="productName" required>
+              </div>
+              <div class="form-group">
+                <label for="productDescription">Product Description</label>
+                <textarea v-model="newProductForm.discription" class="form-control" id="productDescription" required></textarea>
+            </div>
+              <div class="form-group">
+                  <label for="productPrice">Product Price</label>
+                  <input type="number" v-model="newProductForm.price" class="form-control" id="productPrice" required>
+              </div>
+              <div class="form-group">
+                <label for="userId">User Name</label>
+                <input type="number" v-model="newProductForm.user_id" class="form-control" id="userId" required>
+            </div>
+             
+              <div class="form-group">
+                <label for="Addproduct"></label>
+                  <b-button type="submit" class="form-control" variant="primary">Add Product</b-button>
+              </div>
+          </form>
+      </b-modal>
+  </div>
+</template>
+
   <script>
 import axios from 'axios';
 import { BButton, BModal } from 'bootstrap-vue-next';
-import 'bootstrap/dist/css/bootstrap.css';
-import 'bootstrap-vue-next/dist/bootstrap-vue-next.css';
 
 export default {
-  components: {
-    BButton,
-    BModal,
-  },
-  data() {
-    return {
-      products: [],
-      newProduct: {
-        name: '',
-        discription: '',
-        price: 0,
-        user_id: null,
-      },
-      showModal: false,
-    };
-  },
-  mounted() {
-    this.fetchProducts();
-  },
-  methods: {
-    async fetchProducts() {
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          this.$router.push({ name: 'login' });
-          return;
-        }
-
-        const response = await axios.get('/api/products', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-
-        if (response.data.status) {
-          this.products = response.data.products;
-        } else {
-          console.error('Failed to fetch products:', response.data.message);
-        }
-      } catch (error) {
-        console.error('Error fetching products:', error);
-      }
+    components: {
+        BButton,
+        BModal
     },
-    async addProduct() {
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          this.$router.push({ name: 'login' });
-          return;
-        }
-
-        const response = await axios.post('/api/products', this.newProduct, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-
-        if (response.data.status) {
-          this.products.push(response.data.product);
-          this.newProduct = { name: '', discription: '', price: 0, user_id: null }; // Reset form fields
-          this.showModal = false; // Close modal
-        } else {
-          console.error('Failed to add product:', response.data.message);
-        }
-      } catch (error) {
-        console.error('Error adding product:', error);
-      }
+    data() {
+        return {
+          productDetails: [],
+            isEditModalVisible: false,
+            isAddProductModalVisible: false,
+            editProductForm: {
+                id: null,
+                name: '',
+                price: '',
+                discription: ''
+            },
+            newProductForm: {
+                name: '',
+                discription: '',
+                price: 0,
+                user_id: null,
+            }
+        };
     },
-    editProduct(product) {
-      // Logic to edit product details
-      console.log('Edit Product:', product);
+    mounted() {
+        this.fetchProductDetails();
+    },
+    methods: {
+        async fetchProductDetails() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    this.$router.push('/login');
+                    return;
+                }
+
+                const response = await axios.get('/api/products', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.data.status) {
+                    this.productDetails = response.data.products; // Adjusted to `users` if response is an array
+                } else {
+                    console.error('Failed to fetch product details:', response.data.message);
+                }
+            } catch (error) {
+                console.error('Error fetching product details:', error);
+            }
+        },
+        showEditModal(product) {
+            this.editProductForm = { ...product };
+            this.isEditModalVisible = true;
+        },
+        async updateProduct() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    this.$router.push('/login');
+                    return;
+                }
+
+                const response = await axios.put(`/api/edit-products/${this.editProductForm.id}`, this.editProductForm, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                });
+
+                if (response.data.status) {
+                    this.fetchProductDetails(); // Refresh the user details after update
+                    this.isEditModalVisible = false; // Close the modal
+                } else {
+                    console.error('Failed to update product details:', response.data.message);
+                }
+            } catch (error) {
+                console.error('Error updating product details:', error);
+            }
+        },
+        showAddProductModal() {
+            this.newProductForm = { name: '', price: '', discription: '', user_id: null};
+            this.isAddProductModalVisible = true;
+        },
+        async addProduct() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    this.$router.push('/login');
+                    return;
+                }
+
+                const response = await axios.post('/api/add-products', this.newProductForm, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.data.status) {
+                    this.isAddProductModalVisible = false; // Close the modal
+                    this.fetchProductDetails(); // Refresh the user details after update
+                    // Optionally, fetch products to update the product list or handle accordingly
+                } else {
+                    console.error('Failed to add product:', response.data.message);
+                }
+            } catch (error) {
+                console.error('Error adding product:', error);
+            }
+        }
     }
-  }
 };
 
 </script>

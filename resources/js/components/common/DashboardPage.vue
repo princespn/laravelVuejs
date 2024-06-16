@@ -15,28 +15,61 @@
                     </thead>
                     <tbody>
                         <tr v-for="(user, index) in userDetails" :key="user.id">
-                            <td>{{ 1 + index }}</td>
+                            <td>{{ index + 1 }}</td>
                             <td>{{ user.name }}</td>
                             <td>{{ user.phone }}</td>
                             <td>{{ user.email }}</td>
-                            <td><button @click="editUser(user)">Edit</button></td>
+                            <td>
+                                <b-button variant="info" @click="showEditModal(user)">Edit</b-button>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
+        
+        <b-modal v-model="isEditModalVisible" title="Edit User" hide-footer>
+            <form @submit.prevent="updateUser">
+                <div class="form-group">
+                    <label for="editUserName">User Name</label>
+                    <input type="text" v-model="editUserForm.name" class="form-control" id="editUserName" required>
+                </div>
+                <div class="form-group">
+                    <label for="editUserPhone">User Phone</label>
+                    <input type="text" v-model="editUserForm.phone" class="form-control" id="editUserPhone" required>
+                </div>
+                <div class="form-group">
+                    <label for="editUserEmail">User Email</label>
+                    <input type="email" v-model="editUserForm.email" class="form-control" id="editUserEmail" required>
+                </div>
+                <div class="form-group">
+                    <b-button type="submit" class="form-control" variant="primary">Update User</b-button>
+                </div>
+            </form>
+        </b-modal>
     </div>
 </template>
 
 <script>
 import axios from 'axios';
+import { BButton, BModal } from 'bootstrap-vue-next';
 
 export default {
+    components: {
+        BButton,
+        BModal
+    },
     data() {
         return {
-            userDetails: []
-        }
-         
+            userDetails: [],
+            isEditModalVisible: false,
+            editUserForm: {
+                id: null,
+                name: '',
+                phone: '',
+                email: ''
+            }
+        };
     },
     mounted() {
         this.fetchUserDetails();
@@ -65,9 +98,34 @@ export default {
                 console.error('Error fetching user details:', error);
             }
         },
-        editUser(user) {
-            // Logic to edit user details
-            console.log('Edit user:', user);
+        showEditModal(user) {
+            this.editUserForm = { ...user };
+            this.isEditModalVisible = true;
+        },
+        async updateUser() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    this.$router.push('/login');
+                    return;
+                }
+
+                const response = await axios.put(`/api/user-profile/${this.editUserForm.id}`, this.editUserForm, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                });
+
+                if (response.data.status) {
+                    this.isEditModalVisible = false; // Close the modal                    
+                    this.fetchUserDetails(); // Refresh the user details after update
+                   
+                } else {
+                    console.error('Failed to update user details:', response.data.message);
+                }
+            } catch (error) {
+                console.error('Error updating user details:', error);
+            }
         }
     }
 };
