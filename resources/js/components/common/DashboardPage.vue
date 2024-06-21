@@ -2,21 +2,21 @@
     <div class="wrapper d-flex h-100">
         <LeaftMenue></LeaftMenue>
         <div class="container-fluid px-4">
+            <div class="d-flex justify-content-end align-items-center">
+                <!-- search form -->
+                <form @submit.prevent="searchUsers" class="col-xl-4 col-md-auto col-lg-auto mb-0 me-xl-3" role="search">
+                    <div class="input-group">
+                        <input type="text" v-model="searchQuery" class="form-control" placeholder="search here">
+                        <button type="submit" class="btn"><i class="bi bi-search"></i></button>
+                    </div>
+                </form>
+            </div>
+
             <div class="pageTitle pt-3 pb-3 md-pt-0">
                 <h3 class="md-mb-0">Users</h3>
-                
-                  <div class="btn-group me-2">
-                    <button id="generateReport" type="button"  @click="showAddProductModal" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalGenerateReport">
-                      Add Product
-                    </button>
-                  
-               
-              </div>
-            
-         
-      
-          </div>
-           <div class="card-body p-2">
+            </div>
+
+            <div class="card-body p-2">
                 <table class="table table-bordered table-hover">
                     <thead>
                         <tr>
@@ -28,7 +28,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(user, index) in userDetails" :key="user.id">
+                        <tr v-for="(user, index) in filteredUsers" :key="user.id">
                             <td>{{ index + 1 }}</td>
                             <td>{{ user.name }}</td>
                             <td>{{ user.phone }}</td>
@@ -63,23 +63,21 @@
         </b-modal>
     </div>
 </template>
-
 <script>
 import axios from 'axios';
 import LeaftMenue from './LeaftMenue.vue';
-
 import { BButton, BModal } from 'bootstrap-vue-next';
 
 export default {
     components: {
         BButton,
         BModal,
-        LeaftMenue // Register the component here
-
+        LeaftMenue
     },
     data() {
         return {
             userDetails: [],
+            searchQuery: '',
             isEditModalVisible: false,
             editUserForm: {
                 id: null,
@@ -88,6 +86,18 @@ export default {
                 email: ''
             }
         };
+    },
+    computed: {
+        filteredUsers() {
+            if (this.searchQuery.trim() === '') {
+                return this.userDetails;
+            }
+            const search = this.searchQuery.toLowerCase();
+            return this.userDetails.filter(user =>
+                user.name.toLowerCase().includes(search) ||
+                user.email.toLowerCase().includes(search)
+            );
+        }
     },
     mounted() {
         this.fetchUserDetails();
@@ -108,7 +118,7 @@ export default {
                 });
 
                 if (response.data.status) {
-                    this.userDetails = response.data.users; // Adjusted to `users` if response is an array
+                    this.userDetails = response.data.users;
                 } else {
                     console.error('Failed to fetch user details:', response.data.message);
                 }
@@ -131,19 +141,23 @@ export default {
                 const response = await axios.put(`/api/user-profile/${this.editUserForm.id}`, this.editUserForm, {
                     headers: {
                         'Authorization': `Bearer ${token}`
-                    },
+                    }
                 });
 
                 if (response.data.status) {
-                    this.isEditModalVisible = false; // Close the modal                    
-                    this.fetchUserDetails(); // Refresh the user details after update
-                   
+                    this.isEditModalVisible = false;
+                    this.fetchUserDetails();
                 } else {
                     console.error('Failed to update user details:', response.data.message);
                 }
             } catch (error) {
                 console.error('Error updating user details:', error);
             }
+        },
+        searchUsers() {
+            // This method is intentionally left empty
+            // as the search functionality is handled
+            // by the computed property `filteredUsers`
         }
     }
 };

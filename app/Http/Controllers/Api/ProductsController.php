@@ -16,22 +16,22 @@ class ProductsController extends Controller
      */
 
      public function index()
-{
-    // Fetch all products along with the associated user
-    $products = Products::with('user')->get();
+        {
+            // Fetch all products along with the associated user
+            $products = Products::with('user')->get();
 
-    if ($products->isEmpty()) {
-        return response()->json([
-            'status' => false,
-            'message' => 'Products not found',
-        ], 404);
-    }
+            if ($products->isEmpty()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Products not found',
+                ], 404);
+            }
 
-    return response()->json([
-        'status' => true,
-        'products' => $products,
-    ], 200);
-}
+            return response()->json([
+                'status' => true,
+                'products' => $products,
+            ], 200);
+        }
 
 
  
@@ -70,6 +70,29 @@ class ProductsController extends Controller
                 'message' => 'Product not found'
             ], 404);
         }
+    }
+
+    public function searchProducts(Request $request)
+    {
+        $query = $request->input('query');
+        
+        // Ensure the query is sanitized and not empty
+        if (!$query) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Query is required'
+            ],422);
+        }
+
+        // Search users by name or email
+        $products = Products::where('name', 'like', "%$query%")
+                      ->orWhere('discription', 'like', "%$query%")
+                      ->get();
+
+        return response()->json([
+            'status' => true,
+            'products' => $products
+        ],200);
     }
 
     /**

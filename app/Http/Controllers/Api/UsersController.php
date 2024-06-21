@@ -110,6 +110,29 @@ class UsersController extends Controller
 
     //
 
+    public function searchUsers(Request $request)
+    {
+        $query = $request->input('query');
+        
+        // Ensure the query is sanitized and not empty
+        if (!$query) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Query is required'
+            ],422);
+        }
+
+        // Search users by name or email
+        $users = User::where('name', 'like', "%$query%")
+                      ->orWhere('email', 'like', "%$query%")
+                      ->get();
+
+        return response()->json([
+            'status' => true,
+            'users' => $users
+        ],200);
+    }
+
     public function updateProfile(Request $request)
     {
         // Validate the incoming request data

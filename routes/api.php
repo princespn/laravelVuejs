@@ -21,9 +21,11 @@ Route::group([
     Route::get('/profile',[UsersController::class,"getProfile"]);
     Route::post('/user-profile',[UsersController::class,"updateProfile"]);
     Route::get('/user-details',[UsersController::class,"userDetails"]);
+    Route::get('/search-users', [UserController::class, "searchUsers"]);
     Route::get('/products',[ProductsController::class,"index"]);
     Route::post('/add-products',[ProductsController::class,"store"]);
     Route::put('/edit-products/{id}',[ProductsController::class,"update"]);
+    Route::get('/search-products', [ProductsController::class, "searchProducts"]);
 
     Route::get('/logout',[UsersController::class,"logout"]);
     
