@@ -1,9 +1,8 @@
 <template>
-<div class="col-md-8">
-    <div class="card">
-        <div class="card-header">Please fill below field.</div>
-
-        <div class="card-body">
+    <div class="d-flex align-items-center py-4">
+        <div class="form-signin w-100 m-auto text-center">
+          <h1 class="h3 mb-3 fw-normal">Sign up for free</h1>
+        
 
             <div class="input-group mb-3">
                 <input type="text" v-model="item.name" class="form-control" name="name" placeholder="Please Enter Name" required>
@@ -25,7 +24,7 @@
                 <button type="submit" @click="SignupAction" class="btn btn-primary btn-block btn-flat">Sign Up</button>
             </div>
 
-        </div>
+      
     </div>
 </div>
 </template>

@@ -1,8 +1,22 @@
 <template>
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header">User Reports</div>
-            <div class="card-body p-2">
+    <div class="wrapper d-flex h-100">
+        <LeaftMenue></LeaftMenue>
+        <div class="container-fluid px-4">
+            <div class="pageTitle pt-3 pb-3 md-pt-0">
+                <h3 class="md-mb-0">Users</h3>
+                
+                  <div class="btn-group me-2">
+                    <button id="generateReport" type="button"  @click="showAddProductModal" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalGenerateReport">
+                      Add Product
+                    </button>
+                  
+               
+              </div>
+            
+         
+      
+          </div>
+           <div class="card-body p-2">
                 <table class="table table-bordered table-hover">
                     <thead>
                         <tr>
@@ -52,12 +66,16 @@
 
 <script>
 import axios from 'axios';
+import LeaftMenue from './LeaftMenue.vue';
+
 import { BButton, BModal } from 'bootstrap-vue-next';
 
 export default {
     components: {
         BButton,
-        BModal
+        BModal,
+        LeaftMenue // Register the component here
+
     },
     data() {
         return {

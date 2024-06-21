@@ -1,7 +1,19 @@
 <template>
-  <div class="col-md-8">
-      <div class="card">
-          <div class="card-header"> <b-button variant="success" @click="showAddProductModal">Add Product</b-button><span style="float: inline-end;">Product Reports </span>
+    <div class="wrapper d-flex h-100">
+        <LeaftMenue></LeaftMenue>
+        <div class="container-fluid px-4">
+            <div class="pageTitle pt-3 pb-3 md-pt-0">
+                <h3 class="md-mb-0">Products</h3>
+                
+                  <div class="btn-group me-2">
+                    <button id="generateReport" type="button"  @click="showAddProductModal" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalGenerateReport">
+                      Add Product
+                    </button>
+                  
+               
+              </div>
+            
+         
       
           </div>
           <div class="card-body p-2">
@@ -21,7 +33,7 @@
                           <td>{{ index + 1 }}</td>
                           <td>{{ product.name }}</td>
                           <td>{{ product.user.name }}</td>
-                          <td>{{ product.discription }}</td>
+                          <td>{{ truncate(product.discription, 20) }}</td>
                           <td>{{ product.price }}</td>
                           <td>
                               <b-button variant="info" @click="showEditModal(product)">Edit</b-button>
@@ -84,11 +96,14 @@
   <script>
 import axios from 'axios';
 import { BButton, BModal } from 'bootstrap-vue-next';
+import LeaftMenue from './LeaftMenue.vue';
 
 export default {
     components: {
         BButton,
-        BModal
+        BModal,
+        LeaftMenue // Register the component here
+
     },
     data() {
         return {
@@ -110,9 +125,18 @@ export default {
         };
     },
     mounted() {
+        
         this.fetchProductDetails();
     },
     methods: {
+        truncate(text, length) {
+      if (text.length > length) {
+        return text.substring(0, length) + '...';
+      }
+      return text;
+    },
+  
+
         async fetchProductDetails() {
             try {
                 const token = localStorage.getItem('token');

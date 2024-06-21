@@ -16,7 +16,7 @@ import addproduct from '../components/common/AddProductPage.vue'
 const routes = [
   {
     path: '/',
-    component: home,
+    component: login,
   },
   {
     path: '/login',

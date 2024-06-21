@@ -1,9 +1,11 @@
 <template>
-<div class="col-md-8">
-    <div class="card">
-        <div class="card-header">Please fill below field.</div>
+    <div class="d-flex align-items-center py-4">
+        <div class="form-signin w-100 m-auto text-center">
+   
+        <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+      
 
-        <div class="card-body">
+        <div class="form-floating">
 
             <div class="input-group mb-3">
                 <input type="email" class="form-control" v-model="item.email" name="email" placeholder="Please Enter E-mail">
@@ -16,9 +18,10 @@
                 <button type="submit" @click="loginAction" class="btn btn-primary btn-block btn-flat">Login</button>
             </div>
 
-        </div>
-    </div>
-</div>
+      </div>
+      </div>
+  </div>
+    
 </template>
 
 <script>

@@ -1,37 +1,43 @@
 <template>
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header">Update user profile</div>
-            <div class="card-body">
-                <form @submit.prevent="UpdateAction">
-                    <div class="input-group mb-3">
+
+    <div class="wrapper d-flex h-100">
+        <LeaftMenue></LeaftMenue>
+        <div id="pageContent" class="d-flex flex-column">
+        <h3 class="md-mb-0">Update user profile</h3>
+          
+                <form @submit.prevent="UpdateAction"  class="py-4 px-4">
+                    <div class="row mb-3">
                         <input type="text" readonly v-model="item.email" class="form-control" name="email" placeholder="Please Enter E-mail" required>
                     </div>
-                    <div class="input-group mb-3">
+                    <div class="row mb-3">
                         <input type="text" v-model="item.name" class="form-control" name="name" placeholder="Please Enter Name" required>
                     </div>
-                    <div class="input-group mb-3">
+                    <div class="row mb-3">
                         <input type="text" v-model="item.phone" class="form-control" name="phone" placeholder="Please Enter Phone" required>
                     </div>
-                    <div class="input-group mb-3">
+                    <div class="row mb-3">
                         <input type="password" v-model="item.password" class="form-control" name="password" placeholder="Please Enter Password">
                     </div>
-                    <div class="input-group mb-3">
+                    <div class="row mb-3">
                         <input type="password" v-model="item.password_confirmation" class="form-control" name="password_confirmation" placeholder="Please Enter Confirm Password">
                     </div>
-                    <div class="col-4">
+                    <div class="row mb-3">
                         <button type="submit" class="btn btn-primary btn-block btn-flat">Update Profile</button>
                     </div>
                 </form>
-            </div>
-        </div>
+                </div>
+          
     </div>
 </template>
 
 <script>
 import axios from 'axios';
+import LeaftMenue from './LeaftMenue.vue';
 
 export default {
+    components: {
+    LeaftMenue // Register the component here
+  },
     data() {
         return {
             item: {
